@@ -37,7 +37,7 @@ import java.util.Properties;
 
 /**
  * Client Auth service implementation for aliyun RAM.
- *
+ * 阿里云 RAM 权限
  * @author xiweng.yy
  */
 public class RamClientAuthServiceImpl extends AbstractClientAuthService {

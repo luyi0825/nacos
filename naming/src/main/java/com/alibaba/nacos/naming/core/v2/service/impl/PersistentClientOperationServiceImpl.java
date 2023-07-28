@@ -100,6 +100,7 @@ public class PersistentClientOperationServiceImpl extends RequestProcessor4CP im
     public void registerInstance(Service service, Instance instance, String clientId) {
         Service singleton = ServiceManager.getInstance().getSingleton(service);
         if (singleton.isEphemeral()) {
+            //如果之前注册的是临时实例，就不能注册成持久化实例
             throw new NacosRuntimeException(NacosException.INVALID_PARAM,
                     String.format("Current service %s is ephemeral service, can't register persistent instance.",
                             singleton.getGroupedServiceName()));

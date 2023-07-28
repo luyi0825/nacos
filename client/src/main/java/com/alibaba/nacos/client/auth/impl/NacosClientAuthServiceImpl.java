@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * a ClientAuthService implement.
- *
+ * 客户端授权
  * @author wuyfee
  */
 

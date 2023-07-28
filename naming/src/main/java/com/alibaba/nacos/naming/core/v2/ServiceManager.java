@@ -56,7 +56,7 @@ public class ServiceManager {
      * Get singleton service. Put to manager if no singleton.
      *
      * @param service new service
-     * @return if service is exist, return exist service, otherwise return new service
+     * @return if service is exist, return exist service, otherwise return new service(如果服务存在，返回存在的service,否则就返回new的服务
      */
     public Service getSingleton(Service service) {
         singletonRepository.computeIfAbsent(service, key -> {

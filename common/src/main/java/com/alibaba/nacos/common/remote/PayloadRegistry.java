@@ -45,6 +45,7 @@ public class PayloadRegistry {
         if (initialized) {
             return;
         }
+        //通过spi注册，获取每个requestHandler需要转换的实体信息
         ServiceLoader<Payload> payloads = ServiceLoader.load(Payload.class);
         for (Payload payload : payloads) {
             register(payload.getClass().getSimpleName(), payload.getClass());

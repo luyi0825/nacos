@@ -37,7 +37,7 @@ public abstract class RequestHandler<T extends Request, S extends Response> {
     
     /**
      * Handler request.
-     *
+     * 先经过请求过滤器，如果没有问题，就处理请求
      * @param request request
      * @param meta    request meta data
      * @return response
