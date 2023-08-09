@@ -54,7 +54,7 @@ import static com.alibaba.nacos.config.server.utils.LogUtil.PULL_LOG;
 import static com.alibaba.nacos.config.server.utils.RequestUtil.CLIENT_APPNAME_HEADER;
 
 /**
- * ConfigQueryRequestHandler.
+ * ConfigQueryRequestHandler(查询配置处理器).
  *
  * @author liuzunfei
  * @version $Id: ConfigQueryRequestHandler.java, v 0.1 2020年07月14日 9:54 AM liuzunfei Exp $
@@ -152,6 +152,7 @@ public class ConfigQueryRequestHandler extends RequestHandler<ConfigQueryRequest
                             if (PropertyUtil.isDirectRead()) {
                                 configInfoBase = configInfoTagPersistService.findConfigInfo4Tag(dataId, group, tenant, autoTag);
                             } else {
+                                //TODO 什么时候从文件读
                                 file = DiskUtil.targetTagFile(dataId, group, tenant, autoTag);
                             }
                             response.setTag(URLEncoder.encode(autoTag, Constants.ENCODE));

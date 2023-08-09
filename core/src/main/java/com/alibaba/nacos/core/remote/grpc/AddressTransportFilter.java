@@ -62,7 +62,10 @@ public class AddressTransportFilter extends ServerTransportFilter {
         return attrWrapper;
         
     }
-    
+
+    /**
+     * 传输中断，就取消注册
+     */
     @Override
     public void transportTerminated(Attributes transportAttrs) {
         String connectionId = null;

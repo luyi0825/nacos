@@ -244,7 +244,7 @@ public class ConnectionManager {
      */
     @PostConstruct
     public void start() {
-        
+        //初始化连接排除器
         initConnectionEjector();
         // Start UnHealthy Connection Expel Task.
         RpcScheduledExecutor.COMMON_SERVER_EXECUTOR.scheduleWithFixedDelay(() -> {

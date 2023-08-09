@@ -159,7 +159,7 @@ public abstract class RpcClient implements Closeable {
     }
     
     /**
-     * Notify when client disconnected.
+     * Notify when client disconnected(通知客户端断开连接).
      */
     protected void notifyDisConnected() {
         if (connectionEventListeners.isEmpty()) {
@@ -177,7 +177,7 @@ public abstract class RpcClient implements Closeable {
     }
     
     /**
-     * Notify when client new connected.
+     * Notify when client new connected（通知客户端连接）.
      */
     protected void notifyConnected() {
         if (connectionEventListeners.isEmpty()) {
@@ -222,7 +222,7 @@ public abstract class RpcClient implements Closeable {
     }
     
     /**
-     * check if current connected server is in server list, if not switch server.
+     * check if current connected server is in server list, if not switch server（检查当前连接的服务器是否在服务器列表中，如果不是切换服务器）.
      */
     public void onServerListChange() {
         if (currentConnection != null && currentConnection.serverInfo != null) {
@@ -260,8 +260,8 @@ public abstract class RpcClient implements Closeable {
             t.setDaemon(true);
             return t;
         });
-        
-        // connection event consumer.
+
+        // connection event consumer（连接事件消费）.
         clientEventExecutor.submit(() -> {
             while (!clientEventExecutor.isTerminated() && !clientEventExecutor.isShutdown()) {
                 ConnectionEvent take;
@@ -277,7 +277,7 @@ public abstract class RpcClient implements Closeable {
                 }
             }
         });
-        
+        //1.健康检测 2.重新连接
         clientEventExecutor.submit(() -> {
             while (true) {
                 try {
@@ -287,7 +287,7 @@ public abstract class RpcClient implements Closeable {
                     ReconnectContext reconnectContext = reconnectionSignal.poll(rpcClientConfig.connectionKeepAlive(),
                             TimeUnit.MILLISECONDS);
                     if (reconnectContext == null) {
-                        // check alive time.
+                        // check alive time（默认5秒健康检查一次）.
                         if (System.currentTimeMillis() - lastActiveTimeStamp >= rpcClientConfig.connectionKeepAlive()) {
                             boolean isHealthy = healthCheck();
                             if (!isHealthy) {

@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 
 /**
- * handler to remove config.
+ * handler to remove config（删除配置处理器）.
  *
  * @author liuzunfei
  * @version $Id: ConfiRemoveRequestHandler.java, v 0.1 2020年07月16日 5:49 PM liuzunfei Exp $
@@ -82,6 +82,7 @@ public class ConfigRemoveRequestHandler extends RequestHandler<ConfigRemoveReque
             final Timestamp time = TimeUtils.getCurrentTime();
             ConfigTraceService.logPersistenceEvent(dataId, group, tenant, null, time.getTime(), clientIp,
                     ConfigTraceService.PERSISTENCE_EVENT_REMOVE, null);
+            //发送配置改变的事件
             ConfigChangePublisher
                     .notifyConfigChange(new ConfigDataChangeEvent(false, dataId, group, tenant, tag, time.getTime()));
             return ConfigRemoveResponse.buildSuccessResponse();

@@ -144,6 +144,7 @@ public class DiskUtil {
             file = new File(EnvUtil.getNacosHome(), TENANT_TAG_DIR);
             file = new File(file, tenant);
         }
+        //TODO what?
         file = new File(file, group);
         file = new File(file, dataId);
         file = new File(file, tag);
