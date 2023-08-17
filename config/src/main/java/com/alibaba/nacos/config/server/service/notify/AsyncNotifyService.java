@@ -72,10 +72,10 @@ public class AsyncNotifyService {
     public AsyncNotifyService(ServerMemberManager memberManager) {
         this.memberManager = memberManager;
         
-        // Register ConfigDataChangeEvent to NotifyCenter.
+        // Register ConfigDataChangeEvent to NotifyCenter(注册ConfigDataChange事件到通知中心).
         NotifyCenter.registerToPublisher(ConfigDataChangeEvent.class, NotifyCenter.ringBufferSize);
         
-        // Register A Subscriber to subscribe ConfigDataChangeEvent.
+        // Register A Subscriber to subscribe ConfigDataChangeEvent（注册ConfigDataChangeEvent订阅的订阅者）.
         NotifyCenter.registerSubscriber(new Subscriber() {
             
             @Override
@@ -88,9 +88,9 @@ public class AsyncNotifyService {
                     String group = evt.group;
                     String tenant = evt.tenant;
                     String tag = evt.tag;
-                    
+                    //增加配置改变的次数
                     MetricsMonitor.incrementConfigChangeCount(tenant, group, dataId);
-                    
+
                     Collection<Member> ipList = memberManager.allMembers();
                     
                     // In fact, any type of queue here can be
@@ -151,6 +151,9 @@ public class AsyncNotifyService {
                     // start the health check and there are ips that are not monitored, put them directly in the notification queue, otherwise notify
                     boolean unHealthNeedDelay = memberManager.isUnHealth(member.getAddress());
                     if (unHealthNeedDelay) {
+                        /*
+                         * 该集群目标节点是不健康的，就记录unhealth通知事件日志，然后就延迟执行
+                         */
                         // target ip is unhealthy, then put it in the notification list
                         ConfigTraceService.logNotifyEvent(task.getDataId(), task.getGroup(), task.getTenant(), null,
                                 task.getLastModified(), InetUtils.getSelfIP(), ConfigTraceService.NOTIFY_EVENT_UNHEALTH,
@@ -235,7 +238,7 @@ public class AsyncNotifyService {
                         task.getLastModified(), InetUtils.getSelfIP(), ConfigTraceService.NOTIFY_EVENT_ERROR, delayed,
                         task.member.getAddress());
                 
-                //get delay time and set fail count to the task
+                //get delay time and set fail count to the task（同步失败，就再添加延迟任务）
                 asyncTaskExecute(task);
                 
                 LogUtil.NOTIFY_LOG.error("[notify-retry] target:{} dataId:{} group:{} ts:{}", task.member.getAddress(),

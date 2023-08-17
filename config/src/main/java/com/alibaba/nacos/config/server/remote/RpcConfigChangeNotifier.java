@@ -38,8 +38,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,44 +53,44 @@ import java.util.concurrent.TimeUnit;
  */
 @Component(value = "rpcConfigChangeNotifier")
 public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
-    
+
     private static final String POINT_CONFIG_PUSH = "CONFIG_PUSH_COUNT";
-    
+
     private static final String POINT_CONFIG_PUSH_SUCCESS = "CONFIG_PUSH_SUCCESS";
-    
+
     private static final String POINT_CONFIG_PUSH_FAIL = "CONFIG_PUSH_FAIL";
-    
+
     TpsControlManager tpsControlManager = ControlManagerCenter.getInstance().getTpsControlManager();
-    
+
     public RpcConfigChangeNotifier() {
         NotifyCenter.registerSubscriber(this);
     }
-    
+
     @PostConstruct
     private void registerTpsPoint() {
         tpsControlManager.registerTpsPoint(POINT_CONFIG_PUSH);
         tpsControlManager.registerTpsPoint(POINT_CONFIG_PUSH_SUCCESS);
         tpsControlManager.registerTpsPoint(POINT_CONFIG_PUSH_FAIL);
-        
+
     }
-    
+
     @Autowired
     ConfigChangeListenContext configChangeListenContext;
-    
+
     @Autowired
     private RpcPushService rpcPushService;
-    
+
     @Autowired
     private ConnectionManager connectionManager;
-    
+
     /**
      * adaptor to config module ,when server side config change ,invoke this method.
      *
      * @param groupKey groupKey
      */
     public void configDataChanged(String groupKey, String dataId, String group, String tenant, boolean isBeta,
-            List<String> betaIps, String tag) {
-        
+                                  List<String> betaIps, String tag) {
+
         Set<String> listeners = configChangeListenContext.getListeners(groupKey);
         if (CollectionUtils.isEmpty(listeners)) {
             return;
@@ -98,7 +101,7 @@ public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
             if (connection == null) {
                 continue;
             }
-            
+
             ConnectionMeta metaInfo = connection.getMetaInfo();
             //beta ips check.
             String clientIp = metaInfo.getClientIp();
@@ -110,16 +113,16 @@ public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
             if (StringUtils.isNotBlank(tag) && !tag.equals(clientTag)) {
                 continue;
             }
-            
+
             ConfigChangeNotifyRequest notifyRequest = ConfigChangeNotifyRequest.build(dataId, group, tenant);
-            
+
             RpcPushTask rpcPushRetryTask = new RpcPushTask(notifyRequest, 50, client, clientIp, metaInfo.getAppName());
             push(rpcPushRetryTask);
             notifyClientCount++;
         }
         Loggers.REMOTE_PUSH.info("push [{}] clients ,groupKey=[{}]", notifyClientCount, groupKey);
     }
-    
+
     @Override
     public void onEvent(LocalDataChangeEvent event) {
         String groupKey = event.groupKey;
@@ -130,48 +133,48 @@ public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
         String group = strings[1];
         String tenant = strings.length > 2 ? strings[2] : "";
         String tag = event.tag;
-        
+
         configDataChanged(groupKey, dataId, group, tenant, isBeta, betaIps, tag);
-        
+
     }
-    
+
     @Override
     public Class<? extends Event> subscribeType() {
         return LocalDataChangeEvent.class;
     }
-    
+
     class RpcPushTask implements Runnable {
-        
+
         ConfigChangeNotifyRequest notifyRequest;
-        
+
         int maxRetryTimes = -1;
-        
+
         int tryTimes = 0;
-        
+
         String connectionId;
-        
+
         String clientIp;
-        
+
         String appName;
-        
+
         public RpcPushTask(ConfigChangeNotifyRequest notifyRequest, int maxRetryTimes, String connectionId,
-                String clientIp, String appName) {
+                           String clientIp, String appName) {
             this.notifyRequest = notifyRequest;
             this.maxRetryTimes = maxRetryTimes;
             this.connectionId = connectionId;
             this.clientIp = clientIp;
             this.appName = appName;
         }
-        
+
         public boolean isOverTimes() {
             return maxRetryTimes > 0 && this.tryTimes >= maxRetryTimes;
         }
-        
+
         @Override
         public void run() {
             tryTimes++;
             TpsCheckRequest tpsCheckRequest = new TpsCheckRequest();
-           
+
             tpsCheckRequest.setPointName(POINT_CONFIG_PUSH);
             if (!tpsControlManager.check(tpsCheckRequest).isSuccess()) {
                 push(this);
@@ -180,28 +183,29 @@ public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
                     @Override
                     public void onSuccess() {
                         TpsCheckRequest tpsCheckRequest = new TpsCheckRequest();
-                        
+
                         tpsCheckRequest.setPointName(POINT_CONFIG_PUSH_SUCCESS);
                         tpsControlManager.check(tpsCheckRequest);
                     }
-                    
+
                     @Override
                     public void onFail(Throwable e) {
                         TpsCheckRequest tpsCheckRequest = new TpsCheckRequest();
-                        
+
                         tpsCheckRequest.setPointName(POINT_CONFIG_PUSH_FAIL);
                         tpsControlManager.check(tpsCheckRequest);
                         Loggers.REMOTE_PUSH.warn("Push fail", e);
                         push(RpcPushTask.this);
                     }
-                    
+
                 }, ConfigExecutor.getClientConfigNotifierServiceExecutor());
-                
+
             }
-            
+
         }
     }
-    
+
+
     private void push(RpcPushTask retryTask) {
         ConfigChangeNotifyRequest notifyRequest = retryTask.notifyRequest;
         if (retryTask.isOverTimes()) {
@@ -217,7 +221,7 @@ public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
         } else {
             // client is already offline, ignore task.
         }
-        
+
     }
 }
 

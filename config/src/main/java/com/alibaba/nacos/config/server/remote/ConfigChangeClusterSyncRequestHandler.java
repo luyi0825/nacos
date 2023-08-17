@@ -26,7 +26,7 @@ import com.alibaba.nacos.core.control.TpsControl;
 import org.springframework.stereotype.Component;
 
 /**
- * handller to handler config change from other servers.
+ * handller to handler config change from other servers（处理其他集群节点同步配置改变请求处理器）.
  *
  * @author liuzunfei
  * @version $Id: ConfigChangeClusterSyncRequestHandler.java, v 0.1 2020年08月11日 4:35 PM liuzunfei Exp $
