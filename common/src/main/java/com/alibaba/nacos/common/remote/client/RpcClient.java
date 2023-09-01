@@ -268,8 +268,10 @@ public abstract class RpcClient implements Closeable {
                 try {
                     take = eventLinkedBlockingQueue.take();
                     if (take.isConnected()) {
+                        //连接通知
                         notifyConnected();
                     } else if (take.isDisConnected()) {
+                        //断开连接通知
                         notifyDisConnected();
                     }
                 } catch (Throwable e) {
@@ -376,6 +378,7 @@ public abstract class RpcClient implements Closeable {
                     connectToServer.serverInfo.getAddress(), connectToServer.getConnectionId());
             this.currentConnection = connectToServer;
             rpcClientStatus.set(RpcClientStatus.RUNNING);
+            //发送连接事件
             eventLinkedBlockingQueue.offer(new ConnectionEvent(ConnectionEvent.CONNECTED));
         } else {
             switchServerAsync();

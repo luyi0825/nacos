@@ -26,8 +26,8 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Default grpc client config.
- *
+ * Default grpc client config
+ * (grpc默认配置）
  * @author karsonto
  */
 public class DefaultGrpcClientConfig implements GrpcClientConfig {
@@ -71,23 +71,36 @@ public class DefaultGrpcClientConfig implements GrpcClientConfig {
      */
     private DefaultGrpcClientConfig(Builder builder) {
         this.name = builder.name;
+        //重试次数（默认3次）
         this.retryTimes = loadIntegerConfig(GrpcConstants.GRPC_RETRY_TIMES, builder.retryTimes);
+        //超时时间（默认3秒）
         this.timeOutMills = loadLongConfig(GrpcConstants.GRPC_TIMEOUT_MILLS, builder.timeOutMills);
+        //连接存活时间
         this.connectionKeepAlive = loadLongConfig(GrpcConstants.GRPC_CONNECT_KEEP_ALIVE_TIME,
                 builder.connectionKeepAlive);
+        //线程存活时间（默认10s）
         this.threadPoolKeepAlive = loadLongConfig(GrpcConstants.GRPC_THREADPOOL_KEEPALIVETIME,
                 builder.threadPoolKeepAlive);
+        //核心线程数量
         this.threadPoolCoreSize = loadIntegerConfig(GrpcConstants.GRPC_THREADPOOL_CORE_SIZE,
                 builder.threadPoolCoreSize);
+        //最大线程数量
         this.threadPoolMaxSize = loadIntegerConfig(GrpcConstants.GRPC_THREADPOOL_MAX_SIZE, builder.threadPoolMaxSize);
+        //校验服务端超时时间
         this.serverCheckTimeOut = loadLongConfig(GrpcConstants.GRPC_SERVER_CHECK_TIMEOUT, builder.serverCheckTimeOut);
+        //线程池容量（默认10000）
         this.threadPoolQueueSize = loadIntegerConfig(GrpcConstants.GRPC_QUEUESIZE, builder.threadPoolQueueSize);
+        //最大消息大小（默认2M)
         this.maxInboundMessageSize = loadIntegerConfig(GrpcConstants.GRPC_MAX_INBOUND_MESSAGE_SIZE,
                 builder.maxInboundMessageSize);
+        //Channel存活时间
         this.channelKeepAlive = loadIntegerConfig(GrpcConstants.GRPC_CHANNEL_KEEP_ALIVE_TIME, builder.channelKeepAlive);
+        //健康检查重试次数(默认三次）
         this.healthCheckRetryTimes = loadIntegerConfig(GrpcConstants.GRPC_HEALTHCHECK_RETRY_TIMES,
                 builder.healthCheckRetryTimes);
+        //健康检查超时时间（默认3s）
         this.healthCheckTimeOut = loadLongConfig(GrpcConstants.GRPC_HEALTHCHECK_TIMEOUT, builder.healthCheckTimeOut);
+        //Channel超时时间内没有数据传输，连接关闭时间（默认20s）
         this.channelKeepAliveTimeout = loadLongConfig(GrpcConstants.GRPC_CHANNEL_KEEP_ALIVE_TIMEOUT,
                 builder.channelKeepAliveTimeout);
         this.labels = builder.labels;

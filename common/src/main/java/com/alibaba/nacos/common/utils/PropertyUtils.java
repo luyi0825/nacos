@@ -51,7 +51,8 @@ public class PropertyUtils {
     }
     
     /**
-     * Get processors count maybe preset by env or property.
+     * Get processors count maybe preset by env or property（得到处理器数量，
+     * 如果自己没有配置就采用机器的处理器数量，配置了就用自己配置的数量）.
      */
     public static int getProcessorsCount() {
         int processorsCount = 0;

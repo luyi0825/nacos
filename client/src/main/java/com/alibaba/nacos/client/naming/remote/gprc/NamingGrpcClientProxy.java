@@ -96,6 +96,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         labels.put(RemoteConstants.LABEL_SOURCE, RemoteConstants.LABEL_SOURCE_SDK);
         labels.put(RemoteConstants.LABEL_MODULE, RemoteConstants.LABEL_MODULE_NAMING);
         labels.put(Constants.APPNAME, AppNameUtils.getAppName());
+        //创建grpc客户端
         this.rpcClient = RpcClientFactory.createClient(uuid, ConnectionType.GRPC, labels,
                 RpcClientTlsConfig.properties(properties.asProperties()));
         this.redoService = new NamingGrpcRedoService(this);
@@ -104,10 +105,15 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     }
     
     private void start(ServerListFactory serverListFactory, ServiceInfoHolder serviceInfoHolder) throws NacosException {
+        //设置server列表工厂（服务端工厂）
         rpcClient.serverListFactory(serverListFactory);
+        //注册连接监听器
         rpcClient.registerConnectionListener(redoService);
+        //注册服务请求处理器
         rpcClient.registerServerRequestHandler(new NamingPushRequestHandler(serviceInfoHolder));
+        //启动rpc客户端
         rpcClient.start();
+        //注册订阅者
         NotifyCenter.registerSubscriber(this);
     }
     

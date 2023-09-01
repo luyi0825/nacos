@@ -105,7 +105,7 @@ public final class ThreadUtils {
     
     /**
      * Through the number of cores, calculate the appropriate number of threads.
-     *
+     * 得到合适的线程数量（2的n次方workerCount,其中workerCount-处理器数量*threadMultiple>0的workerCount最小值）,）
      * @param threadMultiple multiple time of cores
      * @return thread count
      */
@@ -117,7 +117,11 @@ public final class ThreadUtils {
         }
         return workerCount;
     }
-    
+
+
+    public static void main(String[] args) {
+        getSuitableThreadCount(3);
+    }
     public static void shutdownThreadPool(ExecutorService executor) {
         shutdownThreadPool(executor, null);
     }
