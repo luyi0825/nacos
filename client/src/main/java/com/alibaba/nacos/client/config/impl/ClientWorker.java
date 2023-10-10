@@ -143,7 +143,7 @@ public class ClientWorker implements Closeable {
     private final List<AtomicInteger> taskIdCacheCountList = new ArrayList<>();
     
     /**
-     * Add listeners for data.
+     * Add listeners for data（添加监听器-不含租户）.
      *
      * @param dataId    dataId of data
      * @param group     group of data
@@ -157,15 +157,17 @@ public class ClientWorker implements Closeable {
             for (Listener listener : listeners) {
                 cache.addListener(listener);
             }
+            //不需要丢弃
             cache.setDiscard(false);
             cache.setConsistentWithServer(false);
+            //通知监听器配置
             agent.notifyListenConfig();
             
         }
     }
     
     /**
-     * Add listeners for tenant.
+     * Add listeners for tenant（添加监听器-含租户）.
      *
      * @param dataId    dataId of data
      * @param group     group of data
@@ -313,7 +315,7 @@ public class ClientWorker implements Closeable {
     }
     
     /**
-     * Add cache data if absent.
+     * Add cache data if absent（添加缓存数据如果不存在）.
      *
      * @param dataId data id if data
      * @param group  group of data
@@ -668,7 +670,7 @@ public class ClientWorker implements Closeable {
                 }
                 return null;
             });
-            
+            //TODO
             rpcClientInner.registerServerRequestHandler((request) -> {
                 if (request instanceof ClientConfigMetricRequest) {
                     ClientConfigMetricResponse response = new ClientConfigMetricResponse();
@@ -788,6 +790,7 @@ public class ClientWorker implements Closeable {
                     if (cache.isConsistentWithServer()) {
                         cache.checkListenerMd5();
                         if (!needAllSync) {
+                            //不需要同步所有的配置
                             continue;
                         }
                     }

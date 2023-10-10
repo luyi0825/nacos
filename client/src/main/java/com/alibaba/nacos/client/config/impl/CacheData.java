@@ -108,7 +108,7 @@ public class CacheData {
     private volatile String md5;
     
     /**
-     * whether use local config.
+     * whether use local config（是否使用本地的配置）.
      */
     private volatile boolean isUseLocalConfig = false;
     
@@ -137,12 +137,12 @@ public class CacheData {
     private volatile boolean isInitializing = true;
     
     /**
-     * if is cache data md5 sync with the server.
+     * if is cache data md5 sync with the server(是否持久化server端数据).
      */
     private volatile AtomicBoolean isConsistentWithServer = new AtomicBoolean();
     
     /**
-     * if is cache data is discard,need to remove.
+     * if is cache data is discard,need to remove（如果缓存数据是丢失的，那么就需要移除）.
      */
     private volatile boolean isDiscard = false;
     

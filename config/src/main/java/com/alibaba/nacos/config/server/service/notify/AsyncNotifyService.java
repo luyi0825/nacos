@@ -138,6 +138,7 @@ public class AsyncNotifyService {
                 Member member = task.member;
                 if (memberManager.getSelf().equals(member)) {
                     if (syncRequest.isBeta()) {
+                        //TODO dumpService具体作用
                         dumpService.dump(syncRequest.getDataId(), syncRequest.getGroup(), syncRequest.getTenant(),
                                 syncRequest.getLastModified(), NetUtils.localIP(), true);
                     } else {

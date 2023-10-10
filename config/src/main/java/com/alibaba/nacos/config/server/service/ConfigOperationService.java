@@ -96,6 +96,7 @@ public class ConfigOperationService {
             if (StringUtils.isBlank(configForm.getTag())) {
                 configInfoPersistService.insertOrUpdate(configRequestInfo.getSrcIp(), configForm.getSrcUser(),
                         configInfo, time, configAdvanceInfo, false);
+                //发布配置改变的通知
                 ConfigChangePublisher.notifyConfigChange(
                         new ConfigDataChangeEvent(false, configForm.getDataId(), configForm.getGroup(),
                                 configForm.getNamespaceId(), time.getTime()));

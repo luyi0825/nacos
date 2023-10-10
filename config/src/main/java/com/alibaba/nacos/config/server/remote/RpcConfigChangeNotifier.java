@@ -115,7 +115,7 @@ public class RpcConfigChangeNotifier extends Subscriber<LocalDataChangeEvent> {
             }
 
             ConfigChangeNotifyRequest notifyRequest = ConfigChangeNotifyRequest.build(dataId, group, tenant);
-
+            // 配置文件发生变化后，rpc推送通知请求
             RpcPushTask rpcPushRetryTask = new RpcPushTask(notifyRequest, 50, client, clientIp, metaInfo.getAppName());
             push(rpcPushRetryTask);
             notifyClientCount++;
